@@ -4,9 +4,11 @@ Access your [TwinMind](https://twinmind.com) meeting recordings from the command
 
 ## Features
 
+- **Interactive TUI** - Two-panel terminal interface to browse recordings, view summaries, actions, and transcripts
 - **List recordings** - Browse all your meeting recordings with pagination
 - **Get recording details** - View full summary, action items, transcript, and notes
 - **Search recordings** - Find recordings by keyword in titles
+- **Clipboard support** - Copy content directly from the TUI
 
 ## Installation
 
@@ -37,6 +39,43 @@ Check your auth status:
 
 ```bash
 twinmind-cli auth status
+```
+
+## Interactive TUI
+
+Run `twinmind-cli` without arguments to launch the interactive terminal interface.
+
+```bash
+twinmind-cli
+```
+
+The TUI provides a two-panel view: recordings on the left, detail content on the right.
+
+### Keybindings
+
+| Key | Action |
+|-----|--------|
+| `tab` | Switch focus between list and detail panel |
+| `up/down` or `j/k` | Navigate list (list focused) or scroll content (detail focused) |
+| `enter` | Load selected recording |
+| `s` | Show summary |
+| `a` | Show action items |
+| `t` | Show transcript |
+| `c` | Copy current content to clipboard |
+| `r` | Refresh recordings list |
+| `q` or `x` | Quit |
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `--output-on-exit` | Print the last viewed content to stdout on exit |
+
+The `--output-on-exit` flag is useful for piping content into other tools:
+
+```bash
+twinmind-cli --output-on-exit | pbcopy
+twinmind-cli --output-on-exit > meeting-notes.txt
 ```
 
 ## CLI Usage
