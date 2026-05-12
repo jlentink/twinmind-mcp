@@ -11,21 +11,32 @@ import (
 	"github.com/jlentink/twinmind-mcp/internal/api"
 	"github.com/jlentink/twinmind-mcp/internal/auth"
 	"github.com/jlentink/twinmind-mcp/internal/config"
+	"github.com/jlentink/twinmind-mcp/internal/tui"
 	"github.com/spf13/cobra"
 )
 
 var Version = "dev"
 
 var jsonOutput bool
+var outputOnExit bool
 
 func main() {
 	rootCmd := &cobra.Command{
 		Use:     "twinmind-cli",
 		Short:   "TwinMind CLI - manage your meeting recordings",
 		Version: Version,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+			client := api.NewClient(cfg)
+			return tui.Run(client, outputOnExit)
+		},
 	}
 
 	rootCmd.PersistentFlags().BoolVar(&jsonOutput, "json", false, "output as JSON")
+	rootCmd.Flags().BoolVar(&outputOnExit, "output-on-exit", false, "print viewed content to stdout on exit")
 
 	authCmd := &cobra.Command{
 		Use:   "auth",
