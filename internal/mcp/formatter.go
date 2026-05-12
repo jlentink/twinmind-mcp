@@ -64,6 +64,21 @@ func FormatRecordingDetail(d *api.RecordingDetail) string {
 	return b.String()
 }
 
+func FormatRecordingSection(d *api.RecordingDetail, section string) string {
+	switch section {
+	case "transcript":
+		return d.Summary.Transcript
+	case "summary":
+		return d.Summary.Summary
+	case "action":
+		return d.Summary.Action
+	case "notes":
+		return d.Notes.Notes
+	default:
+		return fmt.Sprintf("Unknown section %q. Valid options: transcript, summary, action, notes.", section)
+	}
+}
+
 func formatDuration(seconds int) string {
 	if seconds <= 0 {
 		return "unknown"

@@ -147,7 +147,9 @@ func recordingsListCmd() *cobra.Command {
 }
 
 func recordingsGetCmd() *cobra.Command {
-	return &cobra.Command{
+	var only string
+
+	cmd := &cobra.Command{
 		Use:   "get <meeting_id>",
 		Short: "Get recording details",
 		Args:  cobra.ExactArgs(1),
@@ -167,10 +169,17 @@ func recordingsGetCmd() *cobra.Command {
 				return printJSON(detail)
 			}
 
-			printRecordingDetail(detail)
+			if only != "" {
+				printRecordingSection(detail, only)
+			} else {
+				printRecordingDetail(detail)
+			}
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVar(&only, "only", "", "output only a specific section: transcript, summary, action, notes")
+	return cmd
 }
 
 func recordingsSearchCmd() *cobra.Command {
@@ -254,6 +263,21 @@ func printRecordingDetail(d *api.RecordingDetail) {
 	if s.Transcript != "" {
 		fmt.Println("\n--- Transcript ---")
 		fmt.Println(s.Transcript)
+	}
+}
+
+func printRecordingSection(d *api.RecordingDetail, section string) {
+	switch section {
+	case "transcript":
+		fmt.Println(d.Summary.Transcript)
+	case "summary":
+		fmt.Println(d.Summary.Summary)
+	case "action":
+		fmt.Println(d.Summary.Action)
+	case "notes":
+		fmt.Println(d.Notes.Notes)
+	default:
+		fmt.Fprintf(os.Stderr, "unknown section %q, valid options: transcript, summary, action, notes\n", section)
 	}
 }
 

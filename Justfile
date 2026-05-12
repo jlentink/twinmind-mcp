@@ -3,11 +3,11 @@ default:
 
 build:
     go build -o bin/twinmind-mcp ./cmd/twinmind-mcp
-    go build -o bin/twinmind-cli ./cmd/twinmind-cli
+    go build -o bin/twinmind ./cmd/twinmind-cli
 
 build-release version:
     go build -ldflags "-s -w -X main.Version={{version}}" -o bin/twinmind-mcp ./cmd/twinmind-mcp
-    go build -ldflags "-s -w -X main.Version={{version}}" -o bin/twinmind-cli ./cmd/twinmind-cli
+    go build -ldflags "-s -w -X main.Version={{version}}" -o bin/twinmind ./cmd/twinmind-cli
 
 test:
     go test ./... -v
@@ -37,5 +37,4 @@ run-cli *args:
     go run ./cmd/twinmind-cli {{args}}
 
 install path="/usr/local/bin/": build
-    sudo cp ./bin/twinmind-mcp {{path}}
-    sudo cp ./bin/twinmind-cli {{path}}
+    sudo cp ./bin/twinmind ./bin/twinmind-mcp {{path}}

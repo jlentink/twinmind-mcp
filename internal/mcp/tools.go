@@ -29,6 +29,9 @@ func (s *Server) registerTools() {
 				mcp.Required(),
 				mcp.Description("The UUID meeting_id of the recording to retrieve"),
 			),
+			mcp.WithString("section",
+				mcp.Description("Return only a specific section: 'transcript', 'summary', 'action', or 'notes'. Omit for full details."),
+			),
 		),
 		s.handleGetRecording,
 	)
@@ -70,7 +73,8 @@ func (s *Server) handleListRecordings(ctx context.Context, request mcp.CallToolR
 }
 
 func (s *Server) handleGetRecording(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	meetingID, ok := request.GetArguments()["meeting_id"].(string)
+	args := request.GetArguments()
+	meetingID, ok := args["meeting_id"].(string)
 	if !ok || meetingID == "" {
 		return errorResult("meeting_id is required"), nil
 	}
@@ -78,6 +82,11 @@ func (s *Server) handleGetRecording(ctx context.Context, request mcp.CallToolReq
 	detail, err := s.api.GetRecording(ctx, meetingID)
 	if err != nil {
 		return errorResult(fmt.Sprintf("failed to get recording: %v", err)), nil
+	}
+
+	section, _ := args["section"].(string)
+	if section != "" {
+		return mcp.NewToolResultText(FormatRecordingSection(detail, section)), nil
 	}
 
 	return mcp.NewToolResultText(FormatRecordingDetail(detail)), nil
